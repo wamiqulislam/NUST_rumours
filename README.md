@@ -146,3 +146,4 @@ C(U)_{new} = C(U)_{old} + \alpha \cdot \text{alignment}
 
 > The system is a **self-regulating, trust-driven, anonymous rumor platform**.  
 > Truth emerges dynamically from credible voters, while anonymity, decentralization, and AI moderation ensure reliability and fairness.
+ 
