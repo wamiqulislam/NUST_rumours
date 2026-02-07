@@ -7,14 +7,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createRumor, getRumors } from '@/lib/engine/rumorLifecycle';
+import { auth } from '@clerk/nextjs/server';
 import { createReferences } from '@/lib/engine/rumorDAG';
 import { filterContent, shouldRejectImmediately } from '@/lib/ai/contentFilter';
-import { generateRumorId } from '@/lib/auth/anonymousIdentity';
+import { generateRumorId, generateUserTokenFromId } from '@/lib/auth/anonymousIdentity';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     const status = searchParams.get('status') as 'open' | 'verified' | 'disputed' | 'all' || 'all';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -71,8 +72,8 @@ export async function POST(request: NextRequest) {
     const filterResult = await filterContent(content);
     if (!filterResult.approved) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Content was not approved',
           reasons: filterResult.reasons,
           categories: filterResult.categories,

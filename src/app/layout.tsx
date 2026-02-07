@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white min-h-screen`}
-      >
+  <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white min-h-screen`}
+          >
         {/* Navigation */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-gray-800">
           <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -38,7 +47,7 @@ export default function RootLayout({
               </span>
             </Link>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <Link 
                 href="/"
                 className="text-gray-400 hover:text-white transition-colors px-3 py-2"
@@ -48,11 +57,20 @@ export default function RootLayout({
               <Link 
                 href="/submit"
                 className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 
-                         hover:from-purple-500 hover:to-pink-500
-                         rounded-lg font-medium transition-all"
-              >
+                hover:from-purple-500 hover:to-pink-500
+                rounded-lg font-medium transition-all"
+                >
                 + Submit Rumor
               </Link>
+              <div className="flex items-center gap-3">
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton />
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
             </div>
           </div>
         </nav>
@@ -71,5 +89,6 @@ export default function RootLayout({
         </footer>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

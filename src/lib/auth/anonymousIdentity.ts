@@ -33,6 +33,14 @@ export function generateUserToken(fingerprint: string): string {
 }
 
 /**
+ * Returns the raw ID for use as a user token.
+ * Used when we want to use the Clerk User ID directly without hashing.
+ */
+export function generateUserTokenFromId(externalId: string): string {
+  return externalId;
+}
+
+/**
  * Generate a per-rumor vote token
  * 
  * This token is used to prevent double-voting while maintaining
@@ -80,7 +88,7 @@ export function hashEmail(email: string): string {
 export function isEduEmail(email: string): boolean {
   const domain = email.toLowerCase().split('@')[1];
   if (!domain) return false;
-  
+
   // Check for common education domains
   const eduPatterns = [
     '.edu',
@@ -90,7 +98,7 @@ export function isEduEmail(email: string): boolean {
     'college',
     'school',
   ];
-  
+
   return eduPatterns.some(pattern => domain.includes(pattern));
 }
 
@@ -138,7 +146,7 @@ export function createFingerprintHash(components: Record<string, string>): strin
   // Sort keys for consistent ordering
   const sortedKeys = Object.keys(components).sort();
   const values = sortedKeys.map(key => `${key}:${components[key]}`).join('|');
-  
+
   const hash = CryptoJS.SHA256(values);
   return hash.toString(CryptoJS.enc.Hex);
 }

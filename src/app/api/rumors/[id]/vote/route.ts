@@ -9,10 +9,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getRumor } from '@/lib/engine/rumorLifecycle';
+import { auth } from '@clerk/nextjs/server';
 import { addVoteAndRecalculate } from '@/lib/engine/truthScore';
 import { getOrCreateUser, recordPendingUpdate, getUserCredibility } from '@/lib/engine/credibility';
 import { processCredibilityUpdates } from '@/lib/engine/credibility';
-import { generateUserToken, generateVoteToken } from '@/lib/auth/anonymousIdentity';
+import { generateUserToken, generateVoteToken, generateUserTokenFromId } from '@/lib/auth/anonymousIdentity';
 import { checkRateLimit, recordVoteForRateLimit, getEffectiveVoteWeight } from '@/lib/auth/sybilResistance';
 import { db } from '@/lib/db';
 import { votes } from '@/lib/db/schema';
@@ -60,8 +61,11 @@ export async function POST(
       );
     }
 
-    // Generate user token from fingerprint
-    const userToken = generateUserToken(fingerprint);
+    // Use Clerk ID if logged in, otherwise use device fingerprint
+    const { userId } = await auth();
+    const userToken = userId 
+      ? generateUserTokenFromId(userId)
+      : generateUserToken(fingerprint);
 
     // Get or create user
     const user = await getOrCreateUser(userToken);
